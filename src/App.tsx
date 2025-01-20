@@ -1,34 +1,62 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+import { useEffect } from 'react';
+import * as THREE from 'three';
 
 function App() {
-  const [count, setCount] = useState(0);
+  useEffect(() => {
+    // create scene
+    const scene = new THREE.Scene();
+
+    // create camera
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000,
+    );
+    camera.position.z = 5; // Make sure the camera is in a position to view the box
+
+    // create geometry
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+
+    // create material
+    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+
+    // create mesh
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    // create renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    // Attach the renderer's canvas to the DOM
+    const canvasContainer = document.querySelector('#canvas-container');
+    if (canvasContainer) {
+      canvasContainer.appendChild(renderer.domElement);
+    }
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      mesh.rotation.x += 0.01; // Rotate the mesh for some animation
+      mesh.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    // Clean up on unmount
+    return () => {
+      renderer.dispose();
+      // Optionally, remove the canvas
+      if (canvasContainer) {
+        canvasContainer.removeChild(renderer.domElement);
+      }
+    };
+  }, []); // Empty dependency array for useEffect to run once
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div id="canvas-container" style={{ width: '100%', height: '100vh' }} />
   );
 }
 
