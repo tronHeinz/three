@@ -1,17 +1,26 @@
-import { useEffect } from 'react';
-import * as THREE from 'three';
+import { useEffect } from "react";
+import * as THREE from "three";
+import { screenSize } from "three/tsl";
 
 function App() {
   useEffect(() => {
     // create scene
+
     const scene = new THREE.Scene();
+
+    // add texture loader and load a image
+    const textureLoader = new THREE.TextureLoader();
+
+    textureLoader.load("pexels-pixabay-220769.jpg", (texture) => {
+      scene.background = texture; // Set the environment texture
+    });
 
     // create camera
     const camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000,
+      1000
     );
     camera.position.z = 5; // Make sure the camera is in a position to view the box
 
@@ -31,7 +40,7 @@ function App() {
     renderer.setPixelRatio(window.devicePixelRatio);
 
     // Attach the renderer's canvas to the DOM
-    const canvasContainer = document.querySelector('#canvas-container');
+    const canvasContainer = document.querySelector("#canvas-container");
     if (canvasContainer) {
       canvasContainer.appendChild(renderer.domElement);
     }
@@ -56,7 +65,7 @@ function App() {
   }, []); // Empty dependency array for useEffect to run once
 
   return (
-    <div id="canvas-container" style={{ width: '100%', height: '100vh' }} />
+    <div id="canvas-container" style={{ width: "100%", height: "100vh" }} />
   );
 }
 
