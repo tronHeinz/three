@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import * as THREE from "three";
-import { screenSize } from "three/tsl";
+
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 function App() {
   useEffect(() => {
     // create scene
-
     const scene = new THREE.Scene();
 
     // add texture loader and load a image
@@ -13,6 +13,9 @@ function App() {
 
     textureLoader.load("pexels-pixabay-220769.jpg", (texture) => {
       scene.background = texture; // Set the environment texture
+      scene.environment = texture;
+
+      texture.mapping = THREE.EquirectangularReflectionMapping;
     });
 
     // create camera
@@ -28,7 +31,12 @@ function App() {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
 
     // create material
-    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xffff00,
+      roughness: 0.0,
+      metalness: 1.0,
+      wireframe: false,
+    });
 
     // create mesh
     const mesh = new THREE.Mesh(geometry, material);
@@ -45,11 +53,16 @@ function App() {
       canvasContainer.appendChild(renderer.domElement);
     }
 
+    // add controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+
     const animate = () => {
       requestAnimationFrame(animate);
       mesh.rotation.x += 0.01; // Rotate the mesh for some animation
       mesh.rotation.y += 0.01;
       renderer.render(scene, camera);
+
+      controls.update();
     };
 
     animate();
