@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 function App() {
   useEffect(() => {
@@ -39,10 +40,13 @@ function App() {
       canvasContainer.appendChild(renderer.domElement);
     }
 
+    const controls = new OrbitControls(camera, renderer.domElement);
+
     const animate = () => {
       requestAnimationFrame(animate);
       mesh.rotation.x += 0.01; // Rotate the mesh for some animation
       mesh.rotation.y += 0.01;
+      controls.update();
       renderer.render(scene, camera);
     };
 
