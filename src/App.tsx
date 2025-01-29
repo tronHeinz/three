@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import * as THREE from 'three';
+import { useEffect } from "react";
+import * as THREE from "three";
 
 function App() {
   useEffect(() => {
@@ -11,15 +11,18 @@ function App() {
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000,
+      1000
     );
     camera.position.z = 5; // Make sure the camera is in a position to view the box
 
     // create geometry
     const geometry = new THREE.BoxGeometry(1, 1, 1);
 
+    const hemiLight = new THREE.HemisphereLight(0xfffff, 0x444444);
+    scene.add(hemiLight);
+
     // create material
-    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const material = new THREE.MeshStandardMaterial({ color: 0xffff00 });
 
     // create mesh
     const mesh = new THREE.Mesh(geometry, material);
@@ -31,7 +34,7 @@ function App() {
     renderer.setPixelRatio(window.devicePixelRatio);
 
     // Attach the renderer's canvas to the DOM
-    const canvasContainer = document.querySelector('#canvas-container');
+    const canvasContainer = document.querySelector("#canvas-container");
     if (canvasContainer) {
       canvasContainer.appendChild(renderer.domElement);
     }
@@ -56,7 +59,7 @@ function App() {
   }, []); // Empty dependency array for useEffect to run once
 
   return (
-    <div id="canvas-container" style={{ width: '100%', height: '100vh' }} />
+    <div id="canvas-container" style={{ width: "100%", height: "100vh" }} />
   );
 }
 
