@@ -2,6 +2,46 @@ import { useEffect } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
+const createCube = (
+  geometry: THREE.BoxGeometry,
+  material: THREE.MeshBasicMaterial
+) => {
+  const edges = new THREE.EdgesGeometry(geometry);
+  const box = new THREE.LineSegments(edges, material);
+
+  const spaceWidth = 50;
+
+  const [x, y, z] = Array.from(
+    { length: 3 },
+    () => (Math.random() - 0.5) * spaceWidth
+  );
+
+  box.position.set(x, y, z);
+
+  box.userData = {
+    update: (time) => {
+      box.rotation.x = (Math.PI * time) / 4;
+      box.rotation.y = (Math.PI * time) / 6;
+    },
+  };
+
+  return box;
+};
+
+const createCubes = (
+  count: number,
+  geometry: THREE.BoxGeometry,
+  material: THREE.MeshBasicMaterial
+) => {
+  const group = new THREE.Group();
+
+  for (let i = 0; i < count; i += 1) {
+    group.add(createCube(geometry, material));
+  }
+
+  return group;
+};
+
 function App() {
   useEffect(() => {
     // create scene
@@ -16,18 +56,18 @@ function App() {
     );
     camera.position.z = 5; // Make sure the camera is in a position to view the box
 
-    // create geometry
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-
     const hemiLight = new THREE.HemisphereLight(0xfffff, 0x444444);
     scene.add(hemiLight);
 
-    // create material
-    const material = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+    // create geometry
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-    // create mesh
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    // create material
+    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+
+    const boxes = createCubes(500, geometry, material);
+
+    scene.add(boxes);
 
     // create renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -42,10 +82,20 @@ function App() {
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
+    // create clock
+    const clock = new THREE.Clock();
+
     const animate = () => {
       requestAnimationFrame(animate);
-      mesh.rotation.x += 0.01; // Rotate the mesh for some animation
-      mesh.rotation.y += 0.01;
+      // boxes.rotation.x += 0.01; // Rotate the mesh for some animation
+      // boxes.rotation.y += 0.01;
+
+      const time = clock.getElapsedTime();
+
+      boxes.children.forEach((child) => {
+        child.userData.update(time);
+      });
+
       controls.update();
       renderer.render(scene, camera);
     };
