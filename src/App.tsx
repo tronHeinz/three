@@ -2,6 +2,22 @@ import { useEffect } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 
+const handleResize = (
+  camera: THREE.PerspectiveCamera,
+  renderer: THREE.WebGLRenderer
+) => {
+  addEventListener("resize", () => {
+    const { innerWidth, innerHeight, devicePixelRatio } = window;
+    const aspect = innerWidth / innerHeight;
+
+    renderer.setSize(innerWidth, innerHeight);
+
+    renderer.pixelRatio = devicePixelRatio;
+    camera.updateProjectionMatrix();
+    camera.aspect = aspect;
+  });
+};
+
 function App() {
   useEffect(() => {
     // create scene
@@ -51,6 +67,8 @@ function App() {
     };
 
     animate();
+
+    handleResize(camera, renderer);
 
     // Clean up on unmount
     return () => {
