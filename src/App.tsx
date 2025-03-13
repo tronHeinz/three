@@ -18,6 +18,28 @@ const handleResize = (
   });
 };
 
+const createPlane = () => {
+  // create random position
+  const x = Math.floor(Math.random() * 2);
+  const y = Math.floor(Math.random() * 2);
+  const z = Math.floor(Math.random() * 2);
+
+  // create geomentry
+  const geometry = new THREE.PlaneGeometry(1, 1);
+
+  // create material
+  const material = new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+    side: THREE.DoubleSide,
+  });
+
+  const plane = new THREE.Mesh(geometry, material);
+
+  plane.position.set(x, y, z);
+
+  return plane;
+};
+
 function App() {
   useEffect(() => {
     // create scene
@@ -32,18 +54,10 @@ function App() {
     );
     camera.position.z = 5; // Make sure the camera is in a position to view the box
 
-    // create geometry
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-
-    const hemiLight = new THREE.HemisphereLight(0xfffff, 0x444444);
-    scene.add(hemiLight);
-
-    // create material
-    const material = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-
-    // create mesh
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    // create a bunch of planes
+    const countOfPlanes = 100;
+    const planes = Array(countOfPlanes).fill(1).map(createPlane);
+    scene.add(...planes);
 
     // create renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -60,8 +74,8 @@ function App() {
 
     const animate = () => {
       requestAnimationFrame(animate);
-      mesh.rotation.x += 0.01; // Rotate the mesh for some animation
-      mesh.rotation.y += 0.01;
+      // mesh.rotation.x += 0.01; // Rotate the mesh for some animation
+      // mesh.rotation.y += 0.01;
       controls.update();
       renderer.render(scene, camera);
     };
